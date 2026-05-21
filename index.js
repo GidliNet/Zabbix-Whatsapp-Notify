@@ -42,9 +42,7 @@ const main = async () => {
 
     setInterval(async () => {
       if (Alerts.length === 0) return;
-
       const alert = Alerts.shift();
-
       try {
         await client.sendMessage(alert.to, alert.message);
       } catch (err) {
