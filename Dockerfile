@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node
 
 # Install only the bare minimum Chromium headless dependencies
 # and clean apt cache in the same layer to keep image small
