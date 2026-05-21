@@ -16,6 +16,18 @@ const main = async () => {
       clientId: "Alerted",
       dataPath: "./data/session",
     }),
+    puppeteer: {
+      executablePath: "/usr/bin/google-chrome-stable",
+      args: [
+        "--no-sandbox", // ← required in Docker
+        "--disable-setuid-sandbox", // ← required in Docker
+        "--disable-dev-shm-usage", // ← prevents /dev/shm crashes
+        "--disable-gpu", // ← no GPU in container
+        "--no-first-run",
+        "--no-zygote", // ← helps in restricted environments
+        "--single-process", // ← use if --no-zygote alone doesn't work
+      ],
+    },
   });
 
   app.listen(port, () => {});
