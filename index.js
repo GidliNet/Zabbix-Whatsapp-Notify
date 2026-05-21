@@ -17,7 +17,7 @@ const main = async () => {
       dataPath: "./data/session",
     }),
     puppeteer: {
-      executablePath: "/usr/bin/chromium", // ← use system Chromium
+      executablePath: "/usr/bin/chromium",
       args: [
         "--no-sandbox", // ← required in Docker
         "--disable-setuid-sandbox", // ← required in Docker
