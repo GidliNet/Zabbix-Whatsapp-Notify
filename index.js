@@ -1,14 +1,11 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const fs = require("node:fs");
 const express = require("express");
 const cors = require("cors");
 const QRCode = require("qrcode");
 const app = express();
 const port = 3000;
 
-var qrcode = require("qrcode-terminal");
-const { create } = require("node:domain");
-
+console.log(process.platform);
 const main = async () => {
   const client = new Client({
     deviceName: "ZabbixAlerting",
@@ -17,7 +14,8 @@ const main = async () => {
       dataPath: "/data/session",
     }),
     puppeteer: {
-      executablePath: "/usr/bin/google-chrome-stable",
+      executablePath:
+        process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
       args: [
         "--no-sandbox", // ← required in Docker
         "--disable-setuid-sandbox", // ← required in Docker
@@ -73,10 +71,11 @@ const main = async () => {
       created_message.from === client.info.me._serialized &&
       created_message.author == created_message.to
     ) {
+      if (created_message.body.includes("!logout")) {
+        client.logout();
+      }
       if (created_message.body.includes("!groups")) {
         const chats = await client.getChats();
-
-        // Build the reply message
         const lines = chats.map((chat, index) => {
           const name = chat.name || "Unknown";
           const id = chat.id._serialized;
