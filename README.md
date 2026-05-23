@@ -50,6 +50,20 @@ services:
       - seccomp:unconfined
 ```
 
+To start the service, run the following command from the directory containing your `docker-compose.yml`:
+
+```bash
+sudo docker compose down && sudo docker compose pull && sudo docker compose up -d
+```
+
+This command performs three sequential operations:
+
+| Step | Command | Description |
+|---|---|---|
+| 1 | `docker compose down` | Stops and removes any currently running instance of the container |
+| 2 | `docker compose pull` | Pulls the latest image from the registry |
+| 3 | `docker compose up -d` | Starts the container in detached mode (runs in the background) |
+
 ---
 
 ## Account Setup
