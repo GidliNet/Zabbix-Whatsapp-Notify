@@ -136,3 +136,5 @@ dist
 .pnp.*
 
 /data
+/.wwebjs_cache
+zabbix_screenshot.png

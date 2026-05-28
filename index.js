@@ -1,12 +1,22 @@
-const { Client, LocalAuth } = require("whatsapp-web.js");
+const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
+const { mail, recepient_processor } = require("./lib/mail");
+const { zabbix_screenshot } = require("./lib/pupperter");
+const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const QRCode = require("qrcode");
-const app = express();
-const port = 3000;
 
-console.log(process.platform);
+dotenv.config();
+const port = process.env.WEB_SERVER_PORT | 3000;
+const TO = process.env.TO | "";
+const ENABLE_SCREENSHOT = process.env.ENABLE_SCREENSHOT;
 const main = async () => {
+  let code = "";
+  let isReady = false;
+  let Alerts = [];
+
+  const app = express();
+
   const client = new Client({
     deviceName: "ZabbixAlerting",
     authStrategy: new LocalAuth({
@@ -17,13 +27,13 @@ const main = async () => {
       executablePath:
         process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
       args: [
-        "--no-sandbox", // ← required in Docker
-        "--disable-setuid-sandbox", // ← required in Docker
-        "--disable-dev-shm-usage", // ← prevents /dev/shm crashes
-        "--disable-gpu", // ← no GPU in container
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
         "--no-first-run",
-        "--no-zygote", // ← helps in restricted environments
-        "--single-process", // ← use if --no-zygote alone doesn't work
+        "--no-zygote",
+        "--single-process",
       ],
     },
   });
@@ -31,14 +41,23 @@ const main = async () => {
   app.listen(port, () => {});
   app.use(cors());
   app.use(express.json());
-  let code = "";
-  let isReady = false;
 
-  let Alerts = [];
-
-  client.once("ready", () => {
-    console.log("Whatsapp Client is ready.");
+  client.once("ready", async () => {
+    console.log("Whatsapp Client ready.");
     isReady = true;
+
+    // const recepient = await recepient_processor(TO);
+
+    // recepient.forEach((recept) => {
+    //   setInterval(async () => {
+    //     const transporter = await mail().sendMail({
+    //       from: `"Zabbix Alert" <alert@gidli.net>`,
+    //       to: recepient,
+    //       subject: "Whatsapp Zabbix Alert",
+    //       text: "Whatsapp got unlinked to your docker Whatsapp Zabbix Alert",
+    //     });
+    //   }, 1000);
+    // });
 
     setInterval(async () => {
       if (Alerts.length === 0) return;
@@ -77,10 +96,8 @@ const main = async () => {
         const lines = chats.map((chat, index) => {
           const name = chat.name || "Unknown";
           const id = chat.id._serialized;
-
           return `${index + 1}.Name: ${name}\n     ID: ${id}`;
         });
-
         const reply = `*Chat List (${chats.length} total):*\n\n${lines.join("\n\n")}`;
 
         await created_message.reply(reply);
@@ -90,7 +107,61 @@ const main = async () => {
 
   client.on("message", async (message) => {
     if (message.body.startsWith("!")) {
-      if (message.body.includes("!groups")) {
+      console.log("Screenshot status:", ENABLE_SCREENSHOT);
+      if (ENABLE_SCREENSHOT) {
+        if (
+          message.body.includes("!screenshot") ||
+          message.body.includes("!ss")
+        ) {
+          const parameters = message.body.split(" ");
+
+          if (parameters.length <= 3) {
+            if (parameters[1] == "help") {
+              message.reply(`To use the command do \`!screenshot parameter\`
+Parameters:
+- Zabbix Dashboard ID : \`!screenshot 1\`
+- Help: \`!screenshot help\`
+Allias(Command alternative):
+\`!ss\``);
+            } else if (parameters[1] !== undefined && !isNaN(parameters[1])) {
+              await zabbix_screenshot(parameters[1]);
+              const media = await MessageMedia.fromFilePath(
+                "./zabbix_screenshot.png",
+              );
+              await client.sendMessage(message.from, media, {
+                sendMediaAsHd: true,
+              });
+            } else {
+              await zabbix_screenshot(1);
+              const media = await MessageMedia.fromFilePath(
+                "./zabbix_screenshot.png",
+              );
+              await client.sendMessage(message.from, media, {
+                sendMediaAsHd: true,
+              });
+            }
+          } else {
+            client.sendMessage(
+              message.from,
+              "Command `!screenshot` only requires 1 Parameter . Use `!screenshot help` to view available options.",
+            );
+          }
+        } else if (message.body.includes("!help")) {
+          client.sendMessage(
+            message.from,
+            `Command List
+- \`!screenshot help\`
+- \`!help\`
+`,
+          );
+        } else {
+          client.sendMessage(
+            message.from,
+            "This command is not available. Please `!help` to see available command.",
+          );
+        }
+      } else {
+        client.sendMessage(message.from, "Screenshot command is disabled.");
       }
     }
   });
