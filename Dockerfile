@@ -26,16 +26,18 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     ZABBIX_USERNAME= \
     ZABBIX_PASSWORD= \
     ZABBIX_IP= \
-    ENABLE_SCREENSHOT= \
+    ENABLE_SCREENSHOT= 
 
 WORKDIR /app
 
 # Install dependencies first (better layer caching)
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
-
+RUN mkdir ./lib
 # Copy source
 COPY index.js .
+COPY ./lib/mail.js ./lib
+COPY ./lib/pupperter.js ./lib
 
 # Session persistence directory
 RUN mkdir -p /app/data/session

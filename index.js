@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
 const { mail, recepient_processor } = require("./lib/mail");
-const { zabbix_screenshot } = require("./lib/pupperter");
+const { zabbix_screenshot } = require("./lib/puppeter");
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const QRCode = require("qrcode");
 
