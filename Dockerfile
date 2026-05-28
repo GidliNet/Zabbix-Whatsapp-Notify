@@ -37,7 +37,7 @@ RUN mkdir ./lib
 # Copy source
 COPY index.js .
 COPY ./lib/mail.js ./lib
-COPY ./lib/pupperter.js ./lib
+COPY ./lib/puppeter.js ./lib
 
 # Session persistence directory
 RUN mkdir -p /app/data/session
