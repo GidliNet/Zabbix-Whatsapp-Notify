@@ -7,6 +7,28 @@ A JavaScript webhook bridge that receives alerts from your Zabbix server media a
 
 ---
 
+## What's New in V2
+
+### Zabbix Screenshot
+You can now snap a screenshot of your Zabbix dashboard directly from a WhatsApp chat.
+
+- **Resolution:** `1920x1080`
+- **Note:** Only the visible area within the `1920x1080` canvas will be captured — this is **not** a scrollable screenshot. Make sure all critical information is placed within this canvas.
+- You can screenshot a specific dashboard by supplying its ID: `!screenshot <dashboard_id>`
+
+### Commands
+The following commands are now available in V2:
+
+| Command | Description |
+|---|---|
+| `!screenshot` | Captures a screenshot of the default Zabbix view |
+| `!screenshot <dashboard_id>` | Captures a screenshot of a specific dashboard |
+| `!help` | Lists all available commands |
+
+> More commands will be added in future releases.
+
+---
+
 ## Prerequisites
 
 The following are required before running this service:
@@ -28,9 +50,13 @@ docker run --name whatsapp-notify \
   -u 0:0 \
   --restart unless-stopped \
   -p 3002:3000 \
-  -v ./session/:/app/data/session \
+  -e ZABBIX_USERNAME=zabbix \
+  -e ZABBIX_PASSWORD=Admin \
+  -e ZABBIX_IP=0.0.0.0 \
+  -e ENABLE_SCREENSHOT=true \
+  -v /session/:/app/data/session \
   --security-opt seccomp:unconfined \
-  gidlinet/zabbix-whatsapp-notify:v1
+  gidlinet/zabbix-whatsapp-notify:v2
 ```
 
 ### Option 2 — Docker Compose
@@ -38,14 +64,23 @@ docker run --name whatsapp-notify \
 ```yaml
 services:
   whatsapp-bot:
-    image: gidlinet/zabbix-whatsapp-notify:v1
+    image: gidlinet/zabbix-whatsapp-notify:v2
     container_name: whatsapp-notify
     user: "0:0"
     restart: unless-stopped
     ports:
       - "3002:3000"
+    environment:
+      # Your Zabbix username
+      - ZABBIX_USERNAME=zabbix
+      # Your Zabbix password
+      - ZABBIX_PASSWORD=Admin
+      # Your Zabbix IP address
+      - ZABBIX_IP=0.0.0.0
+      # Enable screenshot command — value can be true or false
+      - ENABLE_SCREENSHOT=true
     volumes:
-      - ./session/:/app/data/session
+      - /session/:/app/data/session
     security_opt:
       - seccomp:unconfined
 ```
@@ -63,6 +98,17 @@ This command performs three sequential operations:
 | 1 | `docker compose down` | Stops and removes any currently running instance of the container |
 | 2 | `docker compose pull` | Pulls the latest image from the registry |
 | 3 | `docker compose up -d` | Starts the container in detached mode (runs in the background) |
+
+---
+
+## Environment Variables
+
+| Variable | Description | Required |
+|---|---|---|
+| `ZABBIX_USERNAME` | Your Zabbix login username | Yes |
+| `ZABBIX_PASSWORD` | Your Zabbix login password | Yes |
+| `ZABBIX_IP` | IP address of your Zabbix instance | Yes |
+| `ENABLE_SCREENSHOT` | Enable/disable the screenshot command (`true` / `false`) | Yes |
 
 ---
 
@@ -91,10 +137,13 @@ Commands are only available when sent from your own linked account (i.e., messag
 
 | Command | Description |
 |---|---|
+| `!screenshot` | Captures a screenshot of the default Zabbix view |
+| `!screenshot <dashboard_id>` | Captures a screenshot of a specific dashboard |
+| `!help` | Lists all available commands |
 | `!groups` | Displays all groups and contacts associated with the linked WhatsApp account |
 | `!logout` | Logs out and unlinks the connected WhatsApp account |
 
-**Note:** Additional commands are planned for future releases. The current set is intentionally minimal to maintain stability.
+**Note:** Additional commands are planned for future releases.
 
 ---
 
@@ -194,6 +243,14 @@ Switch to the **Message templates** tab and ensure the following message types a
 ### Step 5 — Assign the Media Type to a User
 
 Navigate to **Users > Users**, select the user that should receive alerts, and under the **Media** tab add the Whatsapp media type. Set the **Send to** field to the WhatsApp contact number or group ID obtained via the `!groups` command.
+
+---
+
+## Docker Image
+
+| Tag | Link |
+|---|---|
+| `v2` | [View on Docker Hub](https://hub.docker.com/layers/gidlinet/zabbix-whatsapp-notify/v2/images/sha256-1e4ff9dadff22ba17cc133b2cd008d734b3cfbb2197c5c30f04c19a43a9a5ec6) |
 
 ---
 
