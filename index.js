@@ -23,6 +23,7 @@ const main = async () => {
       dataPath: "/data/session",
     }),
     puppeteer: {
+      headless: true,
       executablePath:
         process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
       args: [
@@ -33,6 +34,7 @@ const main = async () => {
         "--no-first-run",
         "--no-zygote",
         "--single-process",
+        '--disable-dev-shm-usage',
       ],
     },
   });
