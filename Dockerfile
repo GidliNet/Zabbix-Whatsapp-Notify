@@ -18,7 +18,7 @@ RUN apt-get -y update
 RUN apt-get install -y ./google-chrome-stable_${CHROME_VERSION}_amd64.deb
 
 # Use system Chromium, skip Puppeteer's bundled download
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium 
 ENV NODE_ENV=production 
 ENV EMAIL_NOTIF= 
