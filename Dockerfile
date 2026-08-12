@@ -35,7 +35,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy source
-COPY index.js .
+COPY ./index.js .
 COPY ./lib/mail.js .
 COPY ./lib/pupperter.js .
 # Session persistence directory
