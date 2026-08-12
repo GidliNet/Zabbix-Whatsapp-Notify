@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:24-slim
 
 # Install only the bare minimum Chromium headless dependencies
 # and clean apt cache in the same layer to keep image small
@@ -36,7 +36,8 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy source
 COPY index.js .
-
+COPY ./lib/mail.js .
+COPY ./lib/pupperter.js .
 # Session persistence directory
 RUN mkdir -p /app/data/session
 
