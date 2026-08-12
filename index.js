@@ -23,8 +23,7 @@ const main = async () => {
       dataPath: "/data/session",
     }),
     puppeteer: {
-      headless: true,
-      executablePath:
+          executablePath:
         process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
       args: [
         "--no-sandbox",
@@ -70,30 +69,30 @@ const main = async () => {
     code = await QRCode.toDataURL(qr);
   });
 
-  // client.on("message_create", async (created_message) => {
+  client.on("message_create", async (created_message) => {
 
-  //   if (
-  //     created_message.body.startsWith("!") &&
-  //     created_message.from === client.info.me._serialized &&
-  //     created_message.author == created_message.to
-  //   ) {
-  //     const chat = await created_message.getChat();
-  //     if (created_message.body.includes("!logout")) {
-  //       client.logout();
-  //     }
-  //     if (created_message.body.includes("!groups")) {
-  //       const chats = await client.getChats();
-  //       const lines = chats.map((chat, index) => {
-  //         const name = chat.name || "Unknown";
-  //         const id = chat.id._serialized;
-  //         return `${index + 1}.Name: ${name}\n     ID: ${id}`;
-  //       });
-  //       const reply = `*Chat List (${chats.length} total):*\n\n${lines.join("\n\n")}`;
+    if (
+      created_message.body.startsWith("!") &&
+      created_message.from === client.info.me._serialized &&
+      created_message.author == created_message.to
+    ) {
+      const chat = await created_message.getChat();
+      if (created_message.body.includes("!logout")) {
+        client.logout();
+      }
+      if (created_message.body.includes("!groups")) {
+        const chats = await client.getChats();
+        const lines = chats.map((chat, index) => {
+          const name = chat.name || "Unknown";
+          const id = chat.id._serialized;
+          return `${index + 1}.Name: ${name}\n     ID: ${id}`;
+        });
+        const reply = `*Chat List (${chats.length} total):*\n\n${lines.join("\n\n")}`;
 
-  //       await created_message.reply(reply);
-  //     }
-  //   }
-  // });
+        await created_message.reply(reply);
+      }
+    }
+  });
 
   client.on("message", async (message) => {
     if (message.body.startsWith("!")) {
