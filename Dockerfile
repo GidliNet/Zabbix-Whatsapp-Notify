@@ -4,15 +4,20 @@ FROM node:18-slim
 # and clean apt cache in the same layer to keep image small
 RUN apt-get update \
     && apt-get install -y wget gnupg \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
-      --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    # && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    # && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    # && apt-get update \
+    # && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    #   --no-install-recommends \
+    # && rm -rf /var/lib/apt/lists/*
+
+ENV CHROME_VERSION=145.0.7632.159-1
+RUN wget -q https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
+RUN apt-get -y update
+RUN apt-get install -y ./google-chrome-stable_${CHROME_VERSION}_amd64.deb
 
 # Use system Chromium, skip Puppeteer's bundled download
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium 
 ENV NODE_ENV=production 
 ENV EMAIL_NOTIF= 
