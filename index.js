@@ -34,7 +34,6 @@ const main = async () => {
         "--no-first-run",
         "--no-zygote",
         "--single-process",
-        '--disable-dev-shm-usage',
       ],
     },
   });
