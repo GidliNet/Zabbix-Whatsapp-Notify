@@ -12,21 +12,21 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Use system Chromium, skip Puppeteer's bundled download
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
-    NODE_ENV=production \
-    EMAIL_NOTIF= \
-    HOST= \
-    TO= \
-    USER= \
-    PASSWORD= \
-    SMTP_PORT= \
-    SECURE= \
-    WEB_SERVER_PORT= \
-    ZABBIX_USERNAME= \
-    ZABBIX_PASSWORD= \
-    ZABBIX_IP= \
-    ENABLE_SCREENSHOT= \
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium 
+ENV NODE_ENV=production 
+ENV EMAIL_NOTIF= 
+ENV HOST= 
+ENV TO= 
+ENV USER= 
+ENV PASSWORD= 
+ENV SMTP_PORT= 
+ENV SECURE= 
+ENV WEB_SERVER_PORT= 
+ENV ZABBIX_USERNAME= 
+ENV ZABBIX_PASSWORD= 
+ENV ZABBIX_IP= 
+ENV ENABLE_SCREENSHOT= 
 
 WORKDIR /app
 
