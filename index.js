@@ -38,7 +38,7 @@ const main = async () => {
     },
   });
 
-  app.listen(port, () => {});
+  app.listen(port, () => { });
   app.use(cors());
   app.use(express.json());
 
@@ -46,18 +46,7 @@ const main = async () => {
     console.log("Whatsapp Client ready.");
     isReady = true;
 
-    // const recepient = await recepient_processor(TO);
 
-    // recepient.forEach((recept) => {
-    //   setInterval(async () => {
-    //     const transporter = await mail().sendMail({
-    //       from: `"Zabbix Alert" <alert@gidli.net>`,
-    //       to: recepient,
-    //       subject: "Whatsapp Zabbix Alert",
-    //       text: "Whatsapp got unlinked to your docker Whatsapp Zabbix Alert",
-    //     });
-    //   }, 1000);
-    // });
 
     setInterval(async () => {
       if (Alerts.length === 0) return;
@@ -82,12 +71,13 @@ const main = async () => {
   });
 
   client.on("message_create", async (created_message) => {
-    const chat = await created_message.getChat();
+
     if (
       created_message.body.startsWith("!") &&
       created_message.from === client.info.me._serialized &&
       created_message.author == created_message.to
     ) {
+      const chat = await created_message.getChat();
       if (created_message.body.includes("!logout")) {
         client.logout();
       }
@@ -107,7 +97,6 @@ const main = async () => {
 
   client.on("message", async (message) => {
     if (message.body.startsWith("!")) {
-      console.log("Screenshot status:", ENABLE_SCREENSHOT);
       if (ENABLE_SCREENSHOT) {
         if (
           message.body.includes("!screenshot") ||
