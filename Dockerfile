@@ -33,11 +33,12 @@ WORKDIR /app
 # Install dependencies first (better layer caching)
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
-
+# Session persistence directory
+RUN mkdir -p /app/lib/
 # Copy source
 COPY ./index.js .
-COPY ./lib/mail.js .
-COPY ./lib/pupperter.js .
+COPY ./lib/mail.js ./lib
+COPY ./lib/pupperter.js ./lib
 # Session persistence directory
 RUN mkdir -p /app/data/session
 
