@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM node:18
 # Install only the bare minimum Chromium headless dependencies
 # and clean apt cache in the same layer to keep image small
 RUN apt-get update -y 
@@ -12,7 +12,7 @@ RUN /bin/bash -c "source \$HOME/.nvm/nvm.sh && nvm install lts/hydrogen && nvm u
 
 RUN git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
 WORKDIR Zabbix-Whatsapp-Notify 
-RUN /bin/bash -c "npm install"
+RUN npm ci --only=production
 
 
 # Use system Chromium, skip Puppeteer's bundled download
