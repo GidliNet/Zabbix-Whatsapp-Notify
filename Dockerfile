@@ -2,7 +2,8 @@ FROM ubuntu:24.04
 
 # Install only the bare minimum Chromium headless dependencies
 # and clean apt cache in the same layer to keep image small
-RUN apt-get update && apt-get install wget git
+RUN apt-get update 
+RUN apt-get install wget git
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 RUN apt-get install ./google-chrome-stable_current_amd64.deb
 
