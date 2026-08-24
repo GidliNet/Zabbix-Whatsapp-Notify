@@ -4,7 +4,6 @@ const cors = require("cors");
 const { zabbix_screenshot } = require("./lib/pupperter");
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const QRCode = require("qrcode");
-
 dotenv.config();
 const port = process.env.WEB_SERVER_PORT | 3000;
 const TO = process.env.TO | "";
@@ -25,27 +24,24 @@ const main = async () => {
     puppeteer: {
           executablePath:
         process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--no-first-run",
-        "--no-zygote",
-        "--single-process",
-      ],
+      // args: [
+      //   "--no-sandbox",
+      //   "--disable-setuid-sandbox",
+      //   "--disable-dev-shm-usage",
+      //   "--disable-gpu",
+      //   "--no-first-run",
+      //   "--no-zygote",
+      //   "--single-process",
+      // ],
     },
   });
 
   app.listen(port, () => { });
   app.use(cors());
   app.use(express.json());
-
-  client.once("ready", async () => {
+  client.on("ready", async () => {
     console.log("Whatsapp Client ready.");
     isReady = true;
-
-
 
     setInterval(async () => {
       if (Alerts.length === 0) return;
