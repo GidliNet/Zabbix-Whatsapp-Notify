@@ -8,9 +8,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 RUN apt-get install ./google-chrome-stable_current_amd64.deb -y
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
-RUN source . "$HOME/.nvm/nvm.sh"
-RUN nvm install 24
-RUN nvm use lts/hydrogen
+RUN /bin/bash -c "source \$HOME/.nvm/nvm.sh && nvm install lts/hydrogen && nvm use lts/hydrogen"
 
 
 RUN git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
