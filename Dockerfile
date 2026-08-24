@@ -12,7 +12,7 @@ RUN /bin/bash -c "source \$HOME/.nvm/nvm.sh && nvm install lts/hydrogen && nvm u
 
 RUN git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
 WORKDIR Zabbix-Whatsapp-Notify 
-RUN npm install
+RUN /bin/bash -c "npm install"
 
 
 # Use system Chromium, skip Puppeteer's bundled download
