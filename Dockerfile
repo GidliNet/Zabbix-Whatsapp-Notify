@@ -8,7 +8,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 RUN apt-get install ./google-chrome-stable_current_amd64.deb -y
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
-RUN \. "$HOME/.nvm/nvm.sh"
+RUN source . "$HOME/.nvm/nvm.sh"
 RUN nvm install 24
 RUN nvm use lts/hydrogen
 
