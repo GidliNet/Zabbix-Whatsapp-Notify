@@ -19,7 +19,7 @@ const main = async () => {
     deviceName: "ZabbixAlerting",
     authStrategy: new LocalAuth({
       clientId: "Alerted",
-      dataPath: "/data/session",
+      dataPath: "data/session",
     }),
     puppeteer: {
           executablePath:
