@@ -1,18 +1,18 @@
-FROM node:18
+FROM ubuntu:24.04
 # Install only the bare minimum Chromium headless dependencies
 # and clean apt cache in the same layer to keep image small
 RUN apt-get update -y 
 RUN apt-get install wget git curl  -y
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 RUN apt-get install ./google-chrome-stable_current_amd64.deb -y
-
+RUN rm -rf /var/lib/apt/lists/*
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
 RUN /bin/bash -c "source \$HOME/.nvm/nvm.sh && nvm install lts/hydrogen && nvm use lts/hydrogen"
 
 
 RUN git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
 WORKDIR Zabbix-Whatsapp-Notify 
-RUN npm ci --only=production
+RUN npm ci --production
 
 
 # Use system Chromium, skip Puppeteer's bundled download
@@ -31,7 +31,7 @@ ENV ZABBIX_USERNAME=
 ENV ZABBIX_PASSWORD= 
 ENV ZABBIX_IP= 
 ENV ENABLE_SCREENSHOT= 
-RUN rm -rf /var/lib/apt/lists/*
+
 
 
 # WORKDIR /app
