@@ -9,150 +9,152 @@ const port = process.env.WEB_SERVER_PORT | 3000;
 const TO = process.env.TO | "";
 const ENABLE_SCREENSHOT = process.env.ENABLE_SCREENSHOT;
 const main = async () => {
-  let code = "";
-  let isReady = false;
-  let Alerts = [];
 
-  const app = express();
+  try {
+    let code = "";
+    let isReady = false;
+    let Alerts = [];
 
-  const client = new Client({
-    deviceName: "ZabbixAlerting",
-    authStrategy: new LocalAuth({
-      clientId: "Alerted",
-      dataPath: "data/session",
-    }),
-    puppeteer: {
-          executablePath:
-        process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
-      args: [
-        // "--no-sandbox",
-        // "--disable-setuid-sandbox",
-        // "--disable-dev-shm-usage",
-        // "--disable-gpu",
-        // "--no-first-run",
-        // "--no-zygote",
-        // "--single-process",
-      ],
-    },
-  });
+    const app = express();
 
-  app.listen(port, () => { });
-  app.use(cors());
-  app.use(express.json());
-  client.on("ready", async () => {
-    console.log("Whatsapp Client ready.");
-    isReady = true;
+    const client = new Client({
+      deviceName: "ZabbixAlerting",
+      authStrategy: new LocalAuth({
+        clientId: "Alerted",
+        dataPath: "data/session",
+      }),
+      puppeteer: {
+        executablePath:
+          process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
+        args: [
+          // "--no-sandbox",
+          // "--disable-setuid-sandbox",
+          // "--disable-dev-shm-usage",
+          // "--disable-gpu",
+          // "--no-first-run",
+          // "--no-zygote",
+          // "--single-process",
+        ],
+      },
+    });
 
-    setInterval(async () => {
-      if (Alerts.length === 0) return;
-      const alert = Alerts.shift();
-      try {
-        await client.sendMessage(alert.to, alert.message);
-      } catch (err) {
-        alert.retries = (alert.retries || 0) + 1;
-        if (alert.retries < 3) {
-          Alerts.unshift(alert); // put it back at the front
-        } else {
+    app.listen(port, () => { });
+    app.use(cors());
+    app.use(express.json());
+    client.on("ready", async () => {
+      console.log("Whatsapp Client ready.");
+      isReady = true;
+
+      setInterval(async () => {
+        if (Alerts.length === 0) return;
+        const alert = Alerts.shift();
+        try {
+          await client.sendMessage(alert.to, alert.message);
+        } catch (err) {
+          alert.retries = (alert.retries || 0) + 1;
+          if (alert.retries < 3) {
+            Alerts.unshift(alert); // put it back at the front
+          } else {
+          }
+        }
+      }, 1000);
+    });
+
+    client.on("qr", async (qr) => {
+      console.log(
+        "Not authentication please go to https://localhost:3000/login or https://ip_address:3000/login",
+      );
+      code = await QRCode.toDataURL(qr);
+    });
+
+    client.on("message_create", async (created_message) => {
+
+      if (
+        created_message.body.startsWith("!") &&
+        created_message.from === client.info.me._serialized &&
+        created_message.author == created_message.to
+      ) {
+        const chat = await created_message.getChat();
+        if (created_message.body.includes("!logout")) {
+          client.logout();
+        }
+        if (created_message.body.includes("!groups")) {
+          const chats = await client.getChats();
+          const lines = chats.map((chat, index) => {
+            const name = chat.name || "Unknown";
+            const id = chat.id._serialized;
+            return `${index + 1}.Name: ${name}\n     ID: ${id}`;
+          });
+          const reply = `*Chat List (${chats.length} total):*\n\n${lines.join("\n\n")}`;
+
+          await created_message.reply(reply);
         }
       }
-    }, 1000);
-  });
+    });
 
-  client.on("qr", async (qr) => {
-    console.log(
-      "Not authentication please go to https://localhost:3000/login or https://ip_address:3000/login",
-    );
-    code = await QRCode.toDataURL(qr);
-  });
+    client.on("message", async (message) => {
+      if (message.body.startsWith("!")) {
+        if (ENABLE_SCREENSHOT) {
+          if (
+            message.body.includes("!screenshot") ||
+            message.body.includes("!ss")
+          ) {
+            const parameters = message.body.split(" ");
 
-  client.on("message_create", async (created_message) => {
-
-    if (
-      created_message.body.startsWith("!") &&
-      created_message.from === client.info.me._serialized &&
-      created_message.author == created_message.to
-    ) {
-      const chat = await created_message.getChat();
-      if (created_message.body.includes("!logout")) {
-        client.logout();
-      }
-      if (created_message.body.includes("!groups")) {
-        const chats = await client.getChats();
-        const lines = chats.map((chat, index) => {
-          const name = chat.name || "Unknown";
-          const id = chat.id._serialized;
-          return `${index + 1}.Name: ${name}\n     ID: ${id}`;
-        });
-        const reply = `*Chat List (${chats.length} total):*\n\n${lines.join("\n\n")}`;
-
-        await created_message.reply(reply);
-      }
-    }
-  });
-
-  client.on("message", async (message) => {
-    if (message.body.startsWith("!")) {
-      if (ENABLE_SCREENSHOT) {
-        if (
-          message.body.includes("!screenshot") ||
-          message.body.includes("!ss")
-        ) {
-          const parameters = message.body.split(" ");
-
-          if (parameters.length <= 3) {
-            if (parameters[1] == "help") {
-              message.reply(`To use the command do \`!screenshot parameter\`
+            if (parameters.length <= 3) {
+              if (parameters[1] == "help") {
+                message.reply(`To use the command do \`!screenshot parameter\`
 Parameters:
 - Zabbix Dashboard ID : \`!screenshot 1\`
 - Help: \`!screenshot help\`
 Allias(Command alternative):
 \`!ss\``);
-            } else if (parameters[1] !== undefined && !isNaN(parameters[1])) {
-              await zabbix_screenshot(parameters[1]);
-              const media = await MessageMedia.fromFilePath(
-                "./zabbix_screenshot.png",
-              );
-              await client.sendMessage(message.from, media, {
-                sendMediaAsHd: true,
-              });
+              } else if (parameters[1] !== undefined && !isNaN(parameters[1])) {
+                await zabbix_screenshot(parameters[1]);
+                const media = await MessageMedia.fromFilePath(
+                  "./zabbix_screenshot.png",
+                );
+                await client.sendMessage(message.from, media, {
+                  sendMediaAsHd: true,
+                });
+              } else {
+                await zabbix_screenshot(1);
+                const media = await MessageMedia.fromFilePath(
+                  "./zabbix_screenshot.png",
+                );
+                await client.sendMessage(message.from, media, {
+                  sendMediaAsHd: true,
+                });
+              }
             } else {
-              await zabbix_screenshot(1);
-              const media = await MessageMedia.fromFilePath(
-                "./zabbix_screenshot.png",
+              client.sendMessage(
+                message.from,
+                "Command `!screenshot` only requires 1 Parameter . Use `!screenshot help` to view available options.",
               );
-              await client.sendMessage(message.from, media, {
-                sendMediaAsHd: true,
-              });
             }
-          } else {
+          } else if (message.body.includes("!help")) {
             client.sendMessage(
               message.from,
-              "Command `!screenshot` only requires 1 Parameter . Use `!screenshot help` to view available options.",
-            );
-          }
-        } else if (message.body.includes("!help")) {
-          client.sendMessage(
-            message.from,
-            `Command List
+              `Command List
 - \`!screenshot help\`
 - \`!help\`
 `,
-          );
+            );
+          } else {
+            client.sendMessage(
+              message.from,
+              "This command is not available. Please `!help` to see available command.",
+            );
+          }
         } else {
-          client.sendMessage(
-            message.from,
-            "This command is not available. Please `!help` to see available command.",
-          );
+          client.sendMessage(message.from, "Screenshot command is disabled.");
         }
-      } else {
-        client.sendMessage(message.from, "Screenshot command is disabled.");
       }
-    }
-  });
+    });
 
-  app.get("/login", (req, res) => {
-    if (code == "" && isReady == false) {
-      res.send(`<html>
+    app.get("/login", (req, res) => {
+      if (code == "" && isReady == false) {
+        res.send(`<html>
           <body>
           </body>
           <h3>Checking if bot is already linked...</h3>
@@ -168,22 +170,22 @@ setInterval(function() {
 }, 1000);
           </script>
           </html>`);
-    } else if (code == "" && isReady == true) {
-      res.send(`<html>
+      } else if (code == "" && isReady == true) {
+        res.send(`<html>
           <body>
           </body>
           <h3>Bot is already linked to an account . To view the commands please do <b>!commands</b> to any group or the account you linked .</h3>
           
           </html>`);
-    } else if (code !== "" && isReady == true) {
-      res.send(`   <html>
+      } else if (code !== "" && isReady == true) {
+        res.send(`   <html>
           <body>
           </body>
           <h3>Bot is already linked to an account . To view the commands please do <b>!commands</b> to any group or the account you linked .</h3>
           
           </html>`);
-    } else {
-      res.send(`
+      } else {
+        res.send(`
           <html>
           <body>
           </body>
@@ -217,31 +219,34 @@ setInterval(function() {
           </script>
           </html>
           `);
-    }
-  });
-
-  app.post("/queuealert", async (req, res) => {
-    try {
-      console.log("Received alert queue request:", req.body);
-      const { to, message } = req.body;
-      if (!to || !message) {
-        return res
-          .status(400)
-          .json({ error: "Missing 'to' or 'message' in request body" });
       }
-      Alerts.push({ to, message });
-      res.json({ success: true, message: "Alert queued" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err.message });
-    }
-  });
+    });
 
-  app.get("/", (req, res) => {
-    res.send("Hello World!");
-  });
+    app.post("/queuealert", async (req, res) => {
+      try {
+        console.log("Received alert queue request:", req.body);
+        const { to, message } = req.body;
+        if (!to || !message) {
+          return res
+            .status(400)
+            .json({ error: "Missing 'to' or 'message' in request body" });
+        }
+        Alerts.push({ to, message });
+        res.json({ success: true, message: "Alert queued" });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+      }
+    });
 
-  client.initialize();
+    app.get("/", (req, res) => {
+      res.send("Hello World!");
+    });
+
+    client.initialize();
+  } catch (e) {
+    console.log(e)
+  }
 };
 
 main();
