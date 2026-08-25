@@ -27,13 +27,13 @@ const main = async () => {
         executablePath:
           process.platform !== "win32" ? "/usr/bin/google-chrome-stable" : null,
         args: [
-          // "--no-sandbox",
-          // "--disable-setuid-sandbox",
-          // "--disable-dev-shm-usage",
-          // "--disable-gpu",
-          // "--no-first-run",
-          // "--no-zygote",
-          // "--single-process",
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+          "--no-first-run",
+          "--no-zygote",
+          "--single-process",
         ],
       },
     });
