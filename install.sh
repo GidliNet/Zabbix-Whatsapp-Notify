@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-APP_NAME="zabbix-ping-trapper"
+APP_NAME="ZABBIX-WHATSAPP-NOTIFY"
 APP_DIR="/opt/${APP_NAME}"
 REPO_URL="https://github.com/GidliNet/zabbix-ping-trapper.git"
 SERVICE_FILE="/etc/systemd/system/${APP_NAME}.service"
@@ -27,24 +27,24 @@ echo "Installing dependencies (git, curl)..."
 apt-get install -y git curl build-essential python3 make g++
 
 
-# # -----------------------------
-# # Install NVM (root)
-# # -----------------------------
-# export NVM_DIR="/root/.nvm"
-# if [ ! -d "$NVM_DIR" ]; then
-#   echo "⬇Installing NVM..."
-#   curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-# fi
+# -----------------------------
+# Install NVM (root)
+# -----------------------------
+export NVM_DIR="/root/.nvm"
+if [ ! -d "$NVM_DIR" ]; then
+  echo "⬇Installing NVM..."
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+fi
 
-# # Load NVM
-# source "$NVM_DIR/nvm.sh"
+# Load NVM
+source "$NVM_DIR/nvm.sh"
 
-# # -----------------------------
-# # Install Node.js v18 (Hydrogen)
-# # -----------------------------
-# echo "⬇Installing Node.js lts/hydrogen (v18)..."
-# nvm install lts/hydrogen
-# nvm use lts/hydrogen
+# -----------------------------
+# Install Node.js v18 (Hydrogen)
+# -----------------------------
+echo "⬇Installing Node.js lts/hydrogen (v18)..."
+nvm install lts/hydrogen
+nvm use lts/hydrogen
 
 # -----------------------------
 # Clone application
