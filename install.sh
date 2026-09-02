@@ -1,14 +1,14 @@
-sudo -i
-sudo apt update && sudo apt upgrade
+# sudo -i
+# sudo apt update && sudo apt upgrade
 
 
-sudo git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
+# sudo git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
 
-cp -r Zabbix-Whatsapp-Notify /opt/
+# cp -r Zabbix-Whatsapp-Notify /opt/
 
-cd /opt/Zabbix-Whatsapp-Notify
+# cd /opt/Zabbix-Whatsapp-Notify
 
-npm install
+# npm install
 
 
 
