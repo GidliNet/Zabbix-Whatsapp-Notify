@@ -1,24 +1,9 @@
-# sudo -i
-# sudo apt update && sudo apt upgrade
-
-
-# sudo git clone https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git
-
-# cp -r Zabbix-Whatsapp-Notify /opt/
-
-# cd /opt/Zabbix-Whatsapp-Notify
-
-# npm install
-
-
-
-
 #!/bin/bash
 set -e
 
-APP_NAME="Zabbix-Whatsapp-Notify"
+APP_NAME="zabbix-ping-trapper"
 APP_DIR="/opt/${APP_NAME}"
-REPO_URL="https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git"
+REPO_URL="https://github.com/GidliNet/zabbix-ping-trapper.git"
 SERVICE_FILE="/etc/systemd/system/${APP_NAME}.service"
 CONFIG_DIR="${APP_DIR}/Config"
 
@@ -42,24 +27,24 @@ echo "Installing dependencies (git, curl)..."
 apt-get install -y git curl build-essential python3 make g++
 
 
-# -----------------------------
-# Install NVM (root)
-# -----------------------------
-export NVM_DIR="~/.nvm"
-if [ ! -d "$NVM_DIR" ]; then
-  echo "⬇Installing NVM..."
-  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-fi
+# # -----------------------------
+# # Install NVM (root)
+# # -----------------------------
+# export NVM_DIR="/root/.nvm"
+# if [ ! -d "$NVM_DIR" ]; then
+#   echo "⬇Installing NVM..."
+#   curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+# fi
 
-# Load NVM
-source "$NVM_DIR/nvm.sh"
+# # Load NVM
+# source "$NVM_DIR/nvm.sh"
 
-# -----------------------------
-# Install Node.js v18 (Hydrogen)
-# -----------------------------
-echo "⬇Installing Node.js lts/hydrogen (v18)..."
-nvm install lts/hydrogen
-nvm use lts/hydrogen
+# # -----------------------------
+# # Install Node.js v18 (Hydrogen)
+# # -----------------------------
+# echo "⬇Installing Node.js lts/hydrogen (v18)..."
+# nvm install lts/hydrogen
+# nvm use lts/hydrogen
 
 # -----------------------------
 # Clone application
@@ -86,24 +71,65 @@ mkdir -p "$CONFIG_DIR"
 # -----------------------------
 # Create .env
 # -----------------------------
-echo "Creating .env file..."
-cat <<EOF > "$APP_DIR/.env"
+# echo "Creating .env file..."
+# cat <<EOF > "$APP_DIR/.env"
 
-EMAIL_NOTIF=
-HOST=
-TO=
-USER=
-PASSWORD=
-SMTP_PORT=
-SECURE=
-WEB_SERVER_PORT=
-ZABBIX_USERNAME=
-ZABBIX_PASSWORD=
-ZABBIX_IP=
-ENABLE_SCREENSHOT=
+# EOF
 
-EOF
-
+# -----------------------------
+# Create configuration.json
+# -----------------------------
+# echo "Creating configuration.json..."
+# cat <<EOF > "$CONFIG_DIR/configuration.json"
+# [
+#   {
+#     "IP": "8.8.8.8",
+#     "PING_TIMEOUT": 600,
+#     "RETRIES": 0,
+#     "PACKETLOSS_INTERVAL": 10,
+#     "TrapperPing": {
+#       "server": "172.20.1.1",
+#       "host": "isp-core",
+#       "key": "Trapper.Ping.Google"
+#     },
+#     "TrapperPacketloss": {
+#       "server": "172.20.1.1",
+#       "host": "isp-core",
+#       "key": "Trapper.PacketLoss.Google"
+#     }
+#   },
+#   {
+#     "IP": "1.1.1.1",
+#     "PING_TIMEOUT": 600,
+#     "RETRIES": 0,
+#     "TrapperPing": {
+#       "server": "172.20.1.1",
+#       "host": "isp-core",
+#       "key": "Trapper.Ping.Cloudflare"
+#     },
+#     "TrapperPacketloss": {
+#       "server": "172.20.1.1",
+#       "host": "isp-core",
+#       "key": "Trapper.PacketLoss.Cloudflare"
+#     }
+#   },
+#   {
+#     "IP": "9.9.9.9",
+#     "PING_TIMEOUT": 600,
+#     "RETRIES": 0,
+#     "TrapperPing": {
+#       "server": "172.20.1.1",
+#       "host": "isp-core",
+#       "key": "Trapper.Ping.Cloud9"
+#     },
+#     "TrapperPacketloss": {
+#       "server": "172.20.1.1",
+#       "host": "isp-core",
+#       "key": "Trapper.PacketLoss.Cloud9"
+#     }
+#   }
+# ]
+# EOF
 
 # -----------------------------
 # Create start.sh
