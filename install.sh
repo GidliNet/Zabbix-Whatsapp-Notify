@@ -45,7 +45,7 @@ apt-get install -y git curl build-essential python3 make g++
 # -----------------------------
 # Install NVM (root)
 # -----------------------------
-export NVM_DIR="/.nvm"
+export NVM_DIR="~/.nvm"
 if [ ! -d "$NVM_DIR" ]; then
   echo "⬇Installing NVM..."
   curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
