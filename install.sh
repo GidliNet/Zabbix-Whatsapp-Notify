@@ -3,7 +3,7 @@ set -e
 
 APP_NAME="ZABBIX-WHATSAPP-NOTIFY"
 APP_DIR="/opt/${APP_NAME}"
-REPO_URL="https://github.com/GidliNet/zabbix-ping-trapper.git"
+REPO_URL="https://github.com/GidliNet/Zabbix-Whatsapp-Notify.git"
 SERVICE_FILE="/etc/systemd/system/${APP_NAME}.service"
 CONFIG_DIR="${APP_DIR}/Config"
 
