@@ -41,7 +41,7 @@ COPY ./lib/pupperter.js ./lib
 
 # Session persistence directory
 RUN mkdir -p /app/data/session
-RUN npm ci 
+RUN npm install 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \

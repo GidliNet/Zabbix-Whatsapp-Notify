@@ -16,7 +16,8 @@
     "express": "^5.2.1",
     "fastify": "^5.8.5",
     "jsonwebtoken": "^9.0.3",
-    "nodemailer": "^8.0.9",
+
+
     "puppeteer": "^24.43.1",
     "puppeteer-core": "^25.9.0",
     "qrcode": "^1.5.4",
