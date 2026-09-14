@@ -31,8 +31,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 WORKDIR /app
 
 # Install dependencies first (better layer caching)
-COPY package*.json ./
-RUN npm ci 
+COPY package*.json ./app/
+
 RUN mkdir ./lib
 # Copy source
 COPY index.js .
@@ -41,7 +41,7 @@ COPY ./lib/pupperter.js ./lib
 
 # Session persistence directory
 RUN mkdir -p /app/data/session
-
+RUN npm ci 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
