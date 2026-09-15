@@ -36,8 +36,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 RUN mkdir ./lib
 # Copy source
 COPY index.js .
-COPY ./lib/mail.js ./lib
-COPY ./lib/puppeter.js ./lib
+
 
 # Session persistence directory
 RUN mkdir -p /app/data/session
