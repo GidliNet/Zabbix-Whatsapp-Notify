@@ -32,7 +32,8 @@ WORKDIR /app
 
 # Install dependencies first (better layer caching)
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm install
+#ci --omit=dev && npm cache clean --force
 
 # Copy source
 COPY index.js .
